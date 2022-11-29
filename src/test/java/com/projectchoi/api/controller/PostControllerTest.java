@@ -21,14 +21,28 @@ class PostControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @DisplayName("/posts 요청 시 빈 Map을 반환해야 합니다.")
     public void test() throws Exception {
         // expected
         mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목입니다\", \"content:\": \"글 내용입니다 하하\"}")
+                        .content("{\"title\": \"제목입니다\", \"content\": \"글내용입니다 하하\"}")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string("Hello its my first blog project"))
+                .andExpect(content().string("{}"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("/posts 요청 시 title 필드 값은 필수 입니다.")
+    public void test2() throws Exception {
+        // expected
+        mockMvc.perform(post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": null, \"content\": \"글 내용입니다 하하\"}")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("must not be blank"))
                 .andDo(MockMvcResultHandlers.print());
 
     }
