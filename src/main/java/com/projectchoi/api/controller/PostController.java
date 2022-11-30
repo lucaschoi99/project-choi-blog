@@ -2,6 +2,7 @@ package com.projectchoi.api.controller;
 
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.request.PostCreateDto;
+import com.projectchoi.api.response.PostResponse;
 import com.projectchoi.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class PostController {
 
     // 게시글 단건 조회
     @GetMapping("/posts/{postId}")
-    public Post getSinglePost(@PathVariable(name = "postId") Long id) {
+    public PostResponse getSinglePost(@PathVariable(name = "postId") Long id) {
         return postService.getSinglePost(id);
     }
 }
