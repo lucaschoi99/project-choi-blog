@@ -115,8 +115,8 @@ class PostControllerTest {
     public void GET_single_post_test() throws Exception {
         // given
         Post post = Post.builder()
-                .title("its a title")
-                .content("its a content")
+                .title("title")
+                .content("content")
                 .build();
         postRepository.save(post);
 
