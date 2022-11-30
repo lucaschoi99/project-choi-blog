@@ -22,4 +22,10 @@ public class PostService {
         Post saved = postRepository.save(post);
         return saved.getId();
     }
+
+    // 게시글 단건 조회
+    public Post getSinglePost(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+    }
 }
