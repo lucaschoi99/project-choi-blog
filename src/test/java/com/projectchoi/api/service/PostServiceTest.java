@@ -3,6 +3,7 @@ package com.projectchoi.api.service;
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreateDto;
+import com.projectchoi.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,18 +52,18 @@ class PostServiceTest {
     void get_single_post_test() {
         // given
         Post requestPost = Post.builder()
-                .title("title")
+                .title("012345678912345")
                 .content("content")
                 .build();
         postRepository.save(requestPost);
 
         // when
-        Post getPost = postService.getSinglePost(requestPost.getId());
+        PostResponse getPost = postService.getSinglePost(requestPost.getId());
 
         // then
         assertNotNull(getPost);
         assertThat(getPost.getId()).isEqualTo(requestPost.getId());
-        assertEquals("title", getPost.getTitle());
+        assertEquals("0123456789", getPost.getTitle());
         assertEquals("content", getPost.getContent());
     }
 
