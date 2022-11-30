@@ -41,8 +41,10 @@ class PostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\": null, \"content\": \"글 내용입니다 하하\"}")
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("must not be blank"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("Bad Request!"))
+                .andExpect(jsonPath("$.validation.title").value("must not be blank"))
                 .andDo(MockMvcResultHandlers.print());
 
     }
