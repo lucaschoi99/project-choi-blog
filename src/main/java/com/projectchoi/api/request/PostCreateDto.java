@@ -1,14 +1,12 @@
 package com.projectchoi.api.request;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
-@ToString
 @Getter
 @Setter
+@ToString
 public class PostCreateDto {
 
     @NotBlank
@@ -17,4 +15,9 @@ public class PostCreateDto {
     @NotBlank
     private String content;
 
+    @Builder
+    public PostCreateDto(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
