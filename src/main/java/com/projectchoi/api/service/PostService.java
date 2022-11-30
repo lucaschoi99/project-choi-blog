@@ -7,6 +7,9 @@ import com.projectchoi.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -34,5 +37,12 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .build();
+    }
+
+    // 게시글 여러개 조회
+    public List<PostResponse> getList() {
+        return postRepository.findAll().stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
     }
 }
