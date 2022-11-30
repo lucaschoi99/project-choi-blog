@@ -1,15 +1,13 @@
 package com.projectchoi.api.controller;
 
+import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.request.PostCreateDto;
 import com.projectchoi.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -23,4 +21,9 @@ public class PostController {
         return postService.write(request);
     }
 
+    // 게시글 단건 조회
+    @GetMapping("/posts/{postId}")
+    public Post getSinglePost(@PathVariable(name = "postId") Long id) {
+        return postService.getSinglePost(id);
+    }
 }
