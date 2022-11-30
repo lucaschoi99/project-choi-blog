@@ -1,10 +1,10 @@
 package com.projectchoi.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreateDto;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +13,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.MediaType.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -128,6 +129,37 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.title").value(post.getTitle()))
                 .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    public void GET_list_posts_test() throws Exception {
+        // given
+        Post post1 = postRepository.save(Post.builder()
+                .title("title_1")
+                .content("content_1")
+                .build());
+
+        // given
+        Post post2 = postRepository.save(Post.builder()
+                .title("title_2")
+                .content("content_2")
+                .build());
+
+        // expected
+        mockMvc.perform(get("/posts")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(jsonPath("$[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$[0].title").value("title_1"))
+                .andExpect(jsonPath("$[0].content").value("content_1"))
+                .andExpect(jsonPath("$[1].id").value(post2.getId()))
+                .andExpect(jsonPath("$[1].title").value("title_2"))
+                .andExpect(jsonPath("$[1].content").value("content_2"))
+                .andDo(print());
+
     }
 
 
