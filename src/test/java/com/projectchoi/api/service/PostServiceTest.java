@@ -4,15 +4,17 @@ import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreateDto;
 import com.projectchoi.api.response.PostResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class PostServiceTest {
@@ -67,7 +69,28 @@ class PostServiceTest {
         assertEquals("content", getPost.getContent());
     }
 
+    @Test
+    @DisplayName("글 여러개 조회")
+    void get_list_posts_test() {
+        // given
+        postRepository.saveAll(List.of(
+                Post.builder()
+                        .title("title1")
+                        .content("content1")
+                        .build(),
+                Post.builder()
+                        .title("title2")
+                        .content("content2")
+                        .build()
+                )
+        );
 
+        // when
+        List<PostResponse> posts = postService.getList();
+
+        // then
+        assertEquals(2L, posts.size());
+    }
 
 
 }
