@@ -5,6 +5,7 @@ import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreateDto;
 import com.projectchoi.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,8 +41,8 @@ public class PostService {
     }
 
     // 게시글 여러개 조회
-    public List<PostResponse> getList() {
-        return postRepository.findAll().stream()
+    public List<PostResponse> getList(Pageable pageable) {
+        return postRepository.findAll(pageable).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }
