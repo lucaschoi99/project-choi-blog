@@ -9,12 +9,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @SpringBootTest
 class PostServiceTest {
@@ -70,26 +75,27 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 여러개 조회")
+    @DisplayName("1페이지 글 조회")
     void get_list_posts_test() {
         // given
-        postRepository.saveAll(List.of(
-                Post.builder()
-                        .title("title1")
-                        .content("content1")
-                        .build(),
-                Post.builder()
-                        .title("title2")
-                        .content("content2")
-                        .build()
-                )
-        );
+        List<Post> posts = IntStream.range(1, 31)
+                .mapToObj(i ->
+                        Post.builder()
+                                .title("choi's blog" + i)
+                                .content("blog content" + i)
+                                .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(posts);
+
+        Pageable pageable = PageRequest.of(0, 5, DESC, "id");
 
         // when
-        List<PostResponse> posts = postService.getList();
+        List<PostResponse> result = postService.getList(pageable);
 
         // then
-        assertEquals(2L, posts.size());
+        assertEquals(5L, result.size());
+        assertEquals("choi's blog30", result.get(0).getTitle());
+        assertEquals("blog content26", result.get(4).getContent());
     }
 
 
