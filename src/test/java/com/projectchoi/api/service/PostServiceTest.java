@@ -147,4 +147,22 @@ class PostServiceTest {
     }
 
 
+    @Test
+    @DisplayName("글 삭제")
+    void delete_post_test() {
+        // given
+        Post post = Post.builder()
+                .title("msChoi")
+                .content("반포자이")
+                .build();
+        postRepository.save(post);
+
+        // when
+        postService.delete(post.getId());
+
+        // then
+        assertEquals(0, postRepository.count());
+    }
+
+
 }
