@@ -3,7 +3,8 @@ package com.projectchoi.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.repository.PostRepository;
-import com.projectchoi.api.request.PostCreateDto;
+import com.projectchoi.api.request.PostCreate;
+import com.projectchoi.api.request.PostEdit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,7 @@ import java.util.stream.IntStream;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -46,7 +46,7 @@ class PostControllerTest {
     @DisplayName("/posts 요청 시 id를 반환해야 합니다.")
     public void POST_normal_response_test() throws Exception {
         // given
-        PostCreateDto request = PostCreateDto.builder()
+        PostCreate request = PostCreate.builder()
                 .title("제목입니다")
                 .content("글내용입니다 하하")
                 .build();
@@ -68,7 +68,7 @@ class PostControllerTest {
     @DisplayName("/posts 요청 시 title 필드 값은 필수 입니다.")
     public void POST_null_title_test() throws Exception {
         // given
-        PostCreateDto request = PostCreateDto.builder()
+        PostCreate request = PostCreate.builder()
                 .content("글내용입니다 하하")
                 .build();
 
@@ -92,7 +92,7 @@ class PostControllerTest {
     @DisplayName("/posts 요청 시 DB에 값이 저장돼야 합니다.")
     public void POST_response_db_save_test() throws Exception {
         // given
-        PostCreateDto request = PostCreateDto.builder()
+        PostCreate request = PostCreate.builder()
                 .title("제목입니다")
                 .content("글 내용입니다 하하")
                 .build();
@@ -182,6 +182,52 @@ class PostControllerTest {
                         .andExpect(jsonPath("$[0].content").value("blog content30"))
                         .andDo(print());
 
+    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    public void edit_title_test() throws Exception {
+        // given
+        Post post = Post.builder()
+                .title("msChoi")
+                .content("반포자이")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("bin")
+                .content("반포자이")
+                .build();
+
+        // expected
+        mockMvc.perform(patch("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit)))
+                        .andExpect(status().isOk())
+                        .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 내용 수정")
+    public void edit_content_test() throws Exception {
+        // given
+        Post post = Post.builder()
+                .title("msChoi")
+                .content("반포자이")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("msChoi")
+                .content("리버뷰용산")
+                .build();
+
+        // expected
+        mockMvc.perform(patch("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit)))
+                        .andExpect(status().isOk())
+                        .andDo(print());
     }
 
 
