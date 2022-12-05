@@ -54,7 +54,7 @@ public class PostService {
     @Transactional
     public PostResponse edit(Long id, PostEdit postEdit) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 글은 수정할 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글은 수정할 수 없습니다."));
 
         /**
          * PostEditor 클래스를 따로 만들어서 builder 를 쓰는 이유
@@ -71,5 +71,10 @@ public class PostService {
         return new PostResponse(post);
     }
 
-
+    // 게시글 삭제
+    public void delete(Long id) {
+        Post postToDelete = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글은 삭제할 수 없습니다."));
+        postRepository.delete(postToDelete);
+    }
 }
