@@ -56,6 +56,11 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 글은 수정할 수 없습니다."));
 
+        /**
+         * PostEditor 클래스를 따로 만들어서 builder 를 쓰는 이유
+         *  - edit field 가 많아지면 코드 관리가 너무 힘들다.
+         *  - 수정 가능하고 수정해야 할 필드에 대해 명확하게 인지할 수 있다.
+         */
         PostEditor.PostEditorBuilder postEditorBuilder = post.toEdit();
         PostEditor postEditor = postEditorBuilder
                 .title(postEdit.getTitle())
