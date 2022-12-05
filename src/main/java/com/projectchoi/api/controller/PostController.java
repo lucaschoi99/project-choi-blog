@@ -1,6 +1,7 @@
 package com.projectchoi.api.controller;
 
-import com.projectchoi.api.request.PostCreateDto;
+import com.projectchoi.api.request.PostCreate;
+import com.projectchoi.api.request.PostEdit;
 import com.projectchoi.api.request.PostSearch;
 import com.projectchoi.api.response.PostResponse;
 import com.projectchoi.api.service.PostService;
@@ -19,7 +20,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/posts")
-    public Long post(@RequestBody @Valid PostCreateDto request) {
+    public Long post(@RequestBody @Valid PostCreate request) {
         return postService.write(request);
     }
 
@@ -33,5 +34,11 @@ public class PostController {
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
+    }
+
+    // 게시글 수정
+    @PatchMapping("/posts/{postId}")
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
+        return postService.edit(postId, request);
     }
 }
