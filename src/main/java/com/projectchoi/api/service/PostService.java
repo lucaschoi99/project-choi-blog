@@ -1,13 +1,16 @@
 package com.projectchoi.api.service;
 
 import com.projectchoi.api.domain.Post;
+import com.projectchoi.api.domain.PostEditor;
 import com.projectchoi.api.repository.PostRepository;
-import com.projectchoi.api.request.PostCreateDto;
+import com.projectchoi.api.request.PostCreate;
+import com.projectchoi.api.request.PostEdit;
 import com.projectchoi.api.request.PostSearch;
 import com.projectchoi.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +20,7 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public Long write(PostCreateDto postCreate) {
+    public Long write(PostCreate postCreate) {
         // postCreateDto -> Entity 로 type cast 과정 필요
         Post post = Post.builder()
                 .title(postCreate.getTitle())
@@ -46,4 +49,22 @@ public class PostService {
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }
+
+    // 게시글 수정
+    @Transactional
+    public PostResponse edit(Long id, PostEdit postEdit) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 글은 수정할 수 없습니다."));
+
+        PostEditor.PostEditorBuilder postEditorBuilder = post.toEdit();
+        PostEditor postEditor = postEditorBuilder
+                .title(postEdit.getTitle())
+                .content(postEdit.getContent())
+                .build();
+
+        post.edit(postEditor);
+        return new PostResponse(post);
+    }
+
+
 }
