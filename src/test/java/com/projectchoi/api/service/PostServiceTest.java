@@ -2,7 +2,8 @@ package com.projectchoi.api.service;
 
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.repository.PostRepository;
-import com.projectchoi.api.request.PostCreateDto;
+import com.projectchoi.api.request.PostCreate;
+import com.projectchoi.api.request.PostEdit;
 import com.projectchoi.api.request.PostSearch;
 import com.projectchoi.api.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ class PostServiceTest {
     @DisplayName("글 작성")
     void write_post_test() {
         // given
-        PostCreateDto postCreateDto = PostCreateDto.builder()
+        PostCreate postCreateDto = PostCreate.builder()
                 .title("글제목")
                 .content("글내용")
                 .build();
@@ -95,7 +96,58 @@ class PostServiceTest {
         // then
         assertEquals(10L, result.size());
         assertEquals("choi's blog30", result.get(0).getTitle());
-//        assertEquals("blog content26", result.get(4).getContent());
+    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void edit_title_test() {
+        // given
+        Post post = Post.builder()
+                .title("msChoi")
+                .content("반포자이")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("ms초이")
+                .content("반포자이")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글 제목 수정 과정에서 오류가 발생했습니다. 글 id=" + post.getId()));
+        assertEquals("ms초이", changedPost.getTitle());
+        assertEquals("반포자이", changedPost.getContent());
+
+    }
+
+    @Test
+    @DisplayName("글 내용 수정")
+    void edit_content_test() {
+        // given
+        Post post = Post.builder()
+                .title("msChoi")
+                .content("반포자이")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("msChoi")
+                .content("리버뷰용산")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글 제목 수정 과정에서 오류가 발생했습니다. 글 id=" + post.getId()));
+        assertEquals("msChoi", changedPost.getTitle());
+        assertEquals("리버뷰용산", changedPost.getContent());
+
     }
 
 
