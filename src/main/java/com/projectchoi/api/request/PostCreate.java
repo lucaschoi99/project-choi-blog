@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @ToString
-public class PostCreateDto {
+public class PostCreate {
 
     @NotBlank
     private String title;
@@ -16,7 +16,7 @@ public class PostCreateDto {
     private String content;
 
     @Builder
-    public PostCreateDto(String title, String content) {
+    public PostCreate(String title, String content) {
         this.title = title;
         this.content = content;
     }
