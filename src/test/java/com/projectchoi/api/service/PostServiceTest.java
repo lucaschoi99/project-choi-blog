@@ -110,7 +110,6 @@ class PostServiceTest {
 
         PostEdit postEdit = PostEdit.builder()
                 .title("ms초이")
-                .content("반포자이")
                 .build();
 
         // when
@@ -121,7 +120,6 @@ class PostServiceTest {
                 .orElseThrow(() -> new RuntimeException("글 제목 수정 과정에서 오류가 발생했습니다. 글 id=" + post.getId()));
         assertEquals("ms초이", changedPost.getTitle());
         assertEquals("반포자이", changedPost.getContent());
-
     }
 
     @Test
@@ -135,7 +133,6 @@ class PostServiceTest {
         postRepository.save(post);
 
         PostEdit postEdit = PostEdit.builder()
-                .title("msChoi")
                 .content("리버뷰용산")
                 .build();
 
@@ -147,7 +144,6 @@ class PostServiceTest {
                 .orElseThrow(() -> new RuntimeException("글 제목 수정 과정에서 오류가 발생했습니다. 글 id=" + post.getId()));
         assertEquals("msChoi", changedPost.getTitle());
         assertEquals("리버뷰용산", changedPost.getContent());
-
     }
 
 
