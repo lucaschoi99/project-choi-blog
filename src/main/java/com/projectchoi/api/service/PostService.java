@@ -2,6 +2,7 @@ package com.projectchoi.api.service;
 
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.domain.PostEditor;
+import com.projectchoi.api.exception.PostNotFound;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreate;
 import com.projectchoi.api.request.PostEdit;
@@ -34,7 +35,7 @@ public class PostService {
     // 게시글 단건 조회
     public PostResponse getSinglePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFound::new);
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -54,7 +55,7 @@ public class PostService {
     @Transactional
     public PostResponse edit(Long id, PostEdit postEdit) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글은 수정할 수 없습니다."));
+                .orElseThrow(PostNotFound::new);
 
         /**
          * PostEditor 클래스를 따로 만들어서 builder 를 쓰는 이유
@@ -74,7 +75,7 @@ public class PostService {
     // 게시글 삭제
     public void delete(Long id) {
         Post postToDelete = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글은 삭제할 수 없습니다."));
+                .orElseThrow(PostNotFound::new);
         postRepository.delete(postToDelete);
     }
 }
