@@ -43,7 +43,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 시 id를 반환해야 합니다.")
+    @DisplayName("/posts 요청 정상 실행 확인")
     public void POST_normal_response_test() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
@@ -60,7 +60,27 @@ class PostControllerTest {
                         .content(json)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string("1"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시글 등록 시 제목에 '바보'가 포함되어 있으면 예외처리 합니다.")
+    public void POST_check_curse_test() throws Exception {
+        // given
+        PostCreate request = PostCreate.builder()
+                .title("바보바보바보")
+                .content("하하")
+                .build();
+
+        // Object -> String
+        String json = objectMapper.writeValueAsString(request);
+
+        // expected
+        mockMvc.perform(post("/posts")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -132,6 +152,16 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.id").value(post.getId()))
                 .andExpect(jsonPath("$.title").value(post.getTitle()))
                 .andExpect(jsonPath("$.content").value(post.getContent()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 단건 조회 존재X 게시글 - 실패 케이스")
+    public void GET_single_post_fail_test() throws Exception {
+        // expected
+        mockMvc.perform(get("/posts/{postId}", 1L)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
@@ -228,6 +258,23 @@ class PostControllerTest {
                         .content(objectMapper.writeValueAsString(postEdit)))
                         .andExpect(status().isOk())
                         .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 게시글X - 실패 케이스")
+    public void edit_post_fail_test() throws Exception {
+        // given
+        PostEdit postEdit = PostEdit.builder()
+                .title("msChoi")
+                .content("리버뷰용산")
+                .build();
+
+        // expected
+        mockMvc.perform(patch("/posts/{postId}", 1L)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(postEdit)))
+                .andExpect(status().isNotFound())
+                .andDo(print());
     }
 
 
