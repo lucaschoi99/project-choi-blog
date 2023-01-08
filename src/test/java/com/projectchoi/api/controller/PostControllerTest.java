@@ -43,27 +43,6 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 정상 실행 확인")
-    public void POST_normal_response_test() throws Exception {
-        // given
-        PostCreate request = PostCreate.builder()
-                .title("제목입니다")
-                .content("글내용입니다 하하")
-                .build();
-
-        // Object -> String
-        String json = objectMapper.writeValueAsString(request);
-
-        // expected
-        mockMvc.perform(post("/posts")
-                        .contentType(APPLICATION_JSON)
-                        .content(json)
-                )
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
     @DisplayName("게시글 등록 시 제목에 '바보'가 포함되어 있으면 예외처리 합니다.")
     public void POST_check_curse_test() throws Exception {
         // given
@@ -85,7 +64,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 시 title 필드 값은 필수 입니다.")
+    @DisplayName("글 작성 요청 시 title 필드 값은 필수 입니다.")
     public void POST_null_title_test() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
@@ -109,7 +88,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 시 DB에 값이 저장돼야 합니다.")
+    @DisplayName("글 작성 요청 시 DB에 값이 저장돼야 합니다.")
     public void POST_response_db_save_test() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
