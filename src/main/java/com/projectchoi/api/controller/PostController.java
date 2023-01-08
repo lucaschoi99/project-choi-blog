@@ -19,10 +19,20 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+
+    @GetMapping("/foo")
+    public String foo() {
+        return "foo";
+    }
+
     @PostMapping("/posts")
-    public Long post(@RequestBody @Valid PostCreate request) {
+    public void post(@RequestBody @Valid PostCreate request) {
         request.validate();
-        return postService.write(request);
+        postService.write(request);
     }
 
     // 게시글 단건 조회
