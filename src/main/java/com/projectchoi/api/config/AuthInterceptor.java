@@ -12,11 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info(">> preHandle");
-
         String accessToken = request.getParameter("accessToken");
 
-        if (accessToken != null && accessToken.equals("choi")) {
+        if (accessToken != null && !accessToken.equals("")) {
+            request.setAttribute("userName", accessToken);
             return true;
         }
 
@@ -25,11 +24,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        log.info(">> postHandle");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info(">> afterCompletion");
     }
 }
