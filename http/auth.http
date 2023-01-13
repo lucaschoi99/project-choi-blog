@@ -7,3 +7,8 @@ Content-Type: application/json
   "email": "lucaschoi@gmail.com",
   "password": "asdf"
 }
+
+### 인증 페이지 요청
+GET http://localhost:8080/foo
+Content-Type: application/json
+Cookie: SESSION=4a27ab97-a5e0-4495-8805-958a49816dd5
