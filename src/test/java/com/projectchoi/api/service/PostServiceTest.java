@@ -12,6 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @SpringBootTest
 class PostServiceTest {
@@ -109,6 +112,29 @@ class PostServiceTest {
 
         // when
         List<PostResponse> result = postService.getList(postSearch);
+
+        // then
+        assertEquals(10L, result.size());
+        assertEquals("choi's blog30", result.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("Pageable 이용해 첫 페이지 글 조회")
+    void get_first_page_pageable_test() {
+        // given
+        List<Post> posts = IntStream.range(1, 31)
+                .mapToObj(i ->
+                        Post.builder()
+                                .title("choi's blog" + i)
+                                .content("blog content" + i)
+                                .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(posts);
+
+        Pageable pageable = PageRequest.of(0, 10, DESC,"id");
+
+        // when
+        List<PostResponse> result = postService.getList_pageable(pageable);
 
         // then
         assertEquals(10L, result.size());

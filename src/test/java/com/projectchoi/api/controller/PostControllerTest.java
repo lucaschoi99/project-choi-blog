@@ -22,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -170,7 +171,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("페이지 0을 요청하면 1페이지를 가져온다.")
+    @DisplayName("페이지 0을 요청하면 첫 페이지를 가져온다.")
     public void GET_page_0_performs_page_1_test() throws Exception {
         // given
         List<Post> posts = IntStream.range(1, 31)
@@ -190,6 +191,32 @@ class PostControllerTest {
                         .andExpect(jsonPath("$[0].title").value("choi's blog30"))
                         .andExpect(jsonPath("$[0].content").value("blog content30"))
                         .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("Pageable 이용해 첫 페이지 글 목록을 가져온다.")
+    public void GET_first_page_pageable() throws Exception {
+        // given
+        List<Post> posts = IntStream.range(1, 31)
+                .mapToObj(i ->
+                        Post.builder()
+                                .title("choi's blog" + i)
+                                .content("blog content" + i)
+                                .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(posts);
+
+        // expected
+        mockMvc.perform(get("/posts-pageable?page=1&size=10")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(10)))
+                .andExpect(jsonPath("$[0].title").value("choi's blog1"))
+                .andExpect(jsonPath("$[0].content").value("blog content1"))
+                .andExpect(jsonPath("$[9].title").value("choi's blog10"))
+                .andExpect(jsonPath("$[9].content").value("blog content10"))
+                .andDo(print());
 
     }
 

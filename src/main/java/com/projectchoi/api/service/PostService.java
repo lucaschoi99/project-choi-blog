@@ -9,6 +9,7 @@ import com.projectchoi.api.request.PostEdit;
 import com.projectchoi.api.request.PostSearch;
 import com.projectchoi.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -44,9 +45,16 @@ public class PostService {
                 .build();
     }
 
-    // 게시글 여러개 조회
+    // 게시글 여러개 조회 - querydsl 버전
     public List<PostResponse> getList(PostSearch postSearch) {
         return postRepository.getList(postSearch).stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    // 게시글 여러개 조회 - Pageable 버전
+    public List<PostResponse> getList_pageable(Pageable pageable) {
+        return postRepository.findAll(pageable).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }

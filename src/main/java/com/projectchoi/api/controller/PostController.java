@@ -8,6 +8,7 @@ import com.projectchoi.api.response.PostResponse;
 import com.projectchoi.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,10 +32,11 @@ public class PostController {
         return "인증이 필요 없는 페이지입니다.";
     }
 
+    // 게시글 작성
     @PostMapping("/posts")
-    public void post(@RequestBody @Valid PostCreate request) {
+    public Long post(@RequestBody @Valid PostCreate request) {
         request.validate();
-        postService.write(request);
+        return postService.write(request);
     }
 
     // 게시글 단건 조회
@@ -43,7 +45,13 @@ public class PostController {
         return postService.getSinglePost(postId);
     }
 
-    // 게시글 여러개 조회
+    // 게시글 여러개 조회 - Pageable 버전
+    @GetMapping("/posts-pageable")
+    public List<PostResponse> getList_pageable(Pageable pageable) {
+        return postService.getList_pageable(pageable);
+    }
+
+    // 게시글 여러개 조회 - querydsl 버전
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
