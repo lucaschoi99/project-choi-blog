@@ -1,5 +1,6 @@
 package com.projectchoi.api.domain;
 
+import com.projectchoi.api.request.PostEdit;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,15 +28,9 @@ public class Post {
         this.content = content;
     }
 
-    public PostEditor.PostEditorBuilder toEdit() {
-        return PostEditor.builder()
-                .title(title)
-                .content(content);
-    }
-
-    public void edit(PostEditor postEditor) {
-        title = postEditor.getTitle();
-        content = postEditor.getContent();
+    public void edit(PostEdit postEdit) {
+        title =  postEdit.getTitle() != null ? postEdit.getTitle() : title;
+        content = postEdit.getContent() != null ? postEdit.getContent() : content;
     }
 
 }
