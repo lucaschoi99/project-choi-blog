@@ -1,7 +1,6 @@
 package com.projectchoi.api.service;
 
 import com.projectchoi.api.domain.Post;
-import com.projectchoi.api.domain.PostEditor;
 import com.projectchoi.api.exception.PostNotFound;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreate;
@@ -65,18 +64,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFound::new);
 
-        /**
-         * PostEditor 클래스를 따로 만들어서 builder 를 쓰는 이유
-         *  - edit field 가 많아지면 코드 관리가 너무 힘들다.
-         *  - 수정 가능하고 수정해야 할 필드에 대해 명확하게 인지할 수 있다.
-         */
-        PostEditor.PostEditorBuilder postEditorBuilder = post.toEdit();
-        PostEditor postEditor = postEditorBuilder
-                .title(postEdit.getTitle())
-                .content(postEdit.getContent())
-                .build();
-
-        post.edit(postEditor);
+        post.edit(postEdit);
         return new PostResponse(post);
     }
 
