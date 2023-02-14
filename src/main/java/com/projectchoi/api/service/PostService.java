@@ -10,8 +10,8 @@ import com.projectchoi.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +21,8 @@ public class PostService {
 
     private final PostRepository postRepository;
 
+    // 게시글 작성
+    @Transactional
     public Long write(PostCreate postCreate) {
         // postCreateDto -> Entity 로 type cast 과정 필요
         Post post = Post.builder()
@@ -69,6 +71,7 @@ public class PostService {
     }
 
     // 게시글 삭제
+    @Transactional
     public void delete(Long id) {
         Post postToDelete = postRepository.findById(id)
                 .orElseThrow(PostNotFound::new);
