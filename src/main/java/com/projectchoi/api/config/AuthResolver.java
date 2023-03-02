@@ -32,12 +32,12 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (servletRequest == null) {
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        if (request == null) {
             log.error("servlet request NULL");
             throw new UnauthorizedUser();
         }
-        Cookie[] cookies = servletRequest.getCookies();
+        Cookie[] cookies = request.getCookies();
         if (cookies.length == 0) {
             log.error("No cookie");
             throw new UnauthorizedUser();
@@ -49,6 +49,6 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
         Session session = sessionRepository.findByAccessToken(accessToken)
                 .orElseThrow(UnauthorizedUser::new);
 
-        return new UserSession(session.getUsers().getId());
+        return new UserSession(session.getUser().getId());
     }
 }

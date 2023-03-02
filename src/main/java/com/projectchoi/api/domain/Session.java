@@ -26,11 +26,11 @@ public class Session {
     private String accessToken;
 
     @ManyToOne
-    private Users users;
+    private Users user;
 
     @Builder
     public Session(Users users) {
         this.accessToken = UUID.randomUUID().toString();
-        this.users = users;
+        this.user = users;
     }
 }

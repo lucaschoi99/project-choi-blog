@@ -29,7 +29,7 @@ public class Users {
 
     private LocalDateTime createdAt;
 
-    @OneToMany(cascade = ALL, mappedBy = "users")
+    @OneToMany(cascade = ALL, mappedBy = "user")
     private List<Session> sessions = new ArrayList<>();
 
     @Builder
