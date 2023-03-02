@@ -1,7 +1,6 @@
 package com.projectchoi.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.projectchoi.api.domain.Session;
 import com.projectchoi.api.domain.Users;
 import com.projectchoi.api.repository.SessionRepository;
 import com.projectchoi.api.repository.UserRepository;
@@ -16,13 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -106,7 +103,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 성공 후 세션 응답")
+    @DisplayName("로그인 성공 후 response cookie가 잘 들어있는지 확인")
     public void login_session_response_test() throws Exception {
         // given
         Users usr = userRepository.save(Users.builder()
@@ -129,53 +126,8 @@ class AuthControllerTest {
                         .content(json)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken", notNullValue()))
+                .andExpect(cookie().exists("SESSION"))
                 .andDo(print());
     }
-
-    @Test
-    @DisplayName("로그인 후 인증이 필요한 페이지 접속 /foo")
-    public void login_page_auth() throws Exception {
-        // given
-        Users user = Users.builder()
-                .name("ms-choi")
-                .email("lucaschoi@gmail.com")
-                .password("asdf")
-                .build();
-        Session session = user.addSession();
-        userRepository.save(user);
-
-        // expected
-        mockMvc.perform(get("/foo")
-                        .header("Authorization", session.getAccessToken())
-                        .contentType(APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andDo(print());
-
-    }
-
-    @Test
-    @DisplayName("로그인 후 검증되지 않은 세션값으로 인증이 필요한 페이지 접속")
-    public void login_page_auth_with_not_validated_session() throws Exception {
-        // given
-        Users user = Users.builder()
-                .name("ms-choi")
-                .email("lucaschoi@gmail.com")
-                .password("asdf")
-                .build();
-        Session session = user.addSession();
-        userRepository.save(user);
-
-        // expected
-        mockMvc.perform(get("/foo")
-                        .header("Authorization", session.getAccessToken() + "-not-validated")
-                        .contentType(APPLICATION_JSON)
-                )
-                .andExpect(status().isUnauthorized())
-                .andDo(print());
-
-    }
-
 
 }
