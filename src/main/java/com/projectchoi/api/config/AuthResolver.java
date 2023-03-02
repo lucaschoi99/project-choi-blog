@@ -1,5 +1,6 @@
 package com.projectchoi.api.config;
 
+import com.projectchoi.api.annotation.Auth;
 import com.projectchoi.api.config.data.UserSession;
 import com.projectchoi.api.domain.Session;
 import com.projectchoi.api.exception.UnauthorizedUser;
@@ -23,7 +24,10 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(UserSession.class);
+        boolean hasParameterAnnotation = parameter.hasParameterAnnotation(Auth.class);
+        boolean hasUserSessionType = parameter.getParameterType().equals(UserSession.class);
+
+        return hasParameterAnnotation && hasUserSessionType;
     }
 
     @Override

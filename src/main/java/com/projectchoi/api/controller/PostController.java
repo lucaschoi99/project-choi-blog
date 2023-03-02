@@ -1,5 +1,6 @@
 package com.projectchoi.api.controller;
 
+import com.projectchoi.api.annotation.Auth;
 import com.projectchoi.api.config.data.UserSession;
 import com.projectchoi.api.request.PostCreate;
 import com.projectchoi.api.request.PostEdit;
@@ -22,7 +23,7 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/foo")
-    public Long foo(UserSession userSession) {
+    public Long foo(@Auth UserSession userSession) {
         log.info(">>>{}", userSession.id);
         return userSession.id;
     }
