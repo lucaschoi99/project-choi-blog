@@ -2,6 +2,7 @@ package com.projectchoi.api.controller;
 
 
 import com.projectchoi.api.request.Login;
+import com.projectchoi.api.request.SignUp;
 import com.projectchoi.api.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,5 +37,10 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
+    }
+
+    @PostMapping("/auth/signUp")
+    public void signUp(@RequestBody SignUp signUp) {
+        authService.signUp(signUp);
     }
 }
