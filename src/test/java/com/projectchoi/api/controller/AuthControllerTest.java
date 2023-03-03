@@ -5,6 +5,7 @@ import com.projectchoi.api.domain.Users;
 import com.projectchoi.api.repository.SessionRepository;
 import com.projectchoi.api.repository.UserRepository;
 import com.projectchoi.api.request.Login;
+import com.projectchoi.api.request.SignUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -129,5 +130,57 @@ class AuthControllerTest {
                 .andExpect(cookie().exists("SESSION"))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("회원가입 성공")
+    public void signUp_test() throws Exception {
+        // given
+        SignUp signUp = SignUp.builder()
+                .email("lucaschoi@gmail.com")
+                .password("1234")
+                .name("choi")
+                .build();
+
+        // Object -> String
+        String json = objectMapper.writeValueAsString(signUp);
+
+        // expected
+        mockMvc.perform(post("/auth/signUp")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 예외처리")
+    public void signUp_fail_test() throws Exception {
+        // given
+        Users user = userRepository.save(Users.builder()
+                .email("lucaschoi@gmail.com")
+                .name("lee")
+                .password("5678")
+                .build());
+
+        SignUp signUp = SignUp.builder()
+                .email("lucaschoi@gmail.com")
+                .password("1234")
+                .name("choi")
+                .build();
+
+        // Object -> String
+        String json = objectMapper.writeValueAsString(signUp);
+
+        // expected
+        mockMvc.perform(post("/auth/signUp")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertEquals("이미 등록된 이메일입니다.", result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
 
 }
