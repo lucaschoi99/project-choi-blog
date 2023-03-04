@@ -1,6 +1,6 @@
 ### 로그인
 
-POST http://localhost:8080/auth/login
+POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
@@ -9,6 +9,7 @@ Content-Type: application/json
 }
 
 ### 인증 페이지 요청
-GET http://localhost:8080/foo
+GET {{baseUrl}}/foo
 Content-Type: application/json
-Cookie: SESSION=4a27ab97-a5e0-4495-8805-958a49816dd5
+Cookie: SESSION=f0c940be-d5d3-4e26-ba5e-0b2b29774a57
+
