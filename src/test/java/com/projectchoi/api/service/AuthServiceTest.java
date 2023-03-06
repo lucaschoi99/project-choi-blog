@@ -1,5 +1,6 @@
 package com.projectchoi.api.service;
 
+import com.projectchoi.api.crypt.PasswordEncoder;
 import com.projectchoi.api.domain.Session;
 import com.projectchoi.api.domain.Users;
 import com.projectchoi.api.exception.DuplicateEmailException;
@@ -14,14 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
@@ -35,13 +38,13 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("로그인 성공 - SessionRepository에 저장된 세션의 User는 로그인한 User와 같다.")
+    @DisplayName("로그인 성공 - SessionRepository의 User 저장 로직 테스트")
     void login_test() {
         // given
         Users user = userRepository.save(Users.builder()
                 .name("ms-choi")
                 .email("lucaschoi@gmail.com")
-                .password("asdf")
+                .password(passwordEncoder.encrypt("asdf"))
                 .build());
 
         Login login = Login.builder()
@@ -55,11 +58,51 @@ class AuthServiceTest {
                 .orElseThrow(IllegalAccessError::new);
 
         // then
-        assertEquals(session.getUser().getId(), user.getId());
+        assertEquals(user.getId(), session.getUser().getId());
+        assertEquals(user.getEmail(), session.getUser().getEmail());
+        assertEquals(user.getPassword(), session.getUser().getPassword());
     }
 
     @Test
-    @DisplayName("로그인 실패 테스트")
+    @DisplayName("로그인 성공 - 비밀번호 암호화 로직 테스트")
+    void login_after_signUp() {
+        // given
+        Users user = userRepository.save(Users.builder()
+                .name("ms-choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("asdf")
+                .build();
+
+        // expected
+        assertDoesNotThrow(() -> authService.signIn(login));
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 비밀번호 암호화 로직 테스트")
+    void login_after_signUp_fail() {
+        // given
+        Users user = userRepository.save(Users.builder()
+                .name("ms-choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("1234")
+                .build();
+
+        // expected
+        assertThrows(InvalidSignIn.class, () -> authService.signIn(login));
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - email/password 다름.")
     void login_fail_test() {
         // given
         Users user = userRepository.save(Users.builder()
@@ -94,14 +137,15 @@ class AuthServiceTest {
         assertEquals(1, userRepository.count());
 
         Users user = userRepository.findAll().iterator().next();
-        assertEquals(user.getEmail(), signUp.getEmail());
-        assertEquals(user.getPassword(), signUp.getPassword());
-        assertEquals(user.getName(), signUp.getName());
+
+        assertEquals(signUp.getEmail(), user.getEmail());
+        assertTrue(passwordEncoder.matches(signUp.getPassword(), user.getPassword()));
+        assertEquals(signUp.getName(), user.getName());
     }
 
 
     @Test
-    @DisplayName("회원가입 실패 - 예외처리")
+    @DisplayName("회원가입 실패 - 이메일 중복")
     void signUp_fail_test() {
         // given
         Users user = userRepository.save(Users.builder()

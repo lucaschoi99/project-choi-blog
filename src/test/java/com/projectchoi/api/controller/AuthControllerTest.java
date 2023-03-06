@@ -1,6 +1,7 @@
 package com.projectchoi.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projectchoi.api.crypt.PasswordEncoder;
 import com.projectchoi.api.domain.Users;
 import com.projectchoi.api.repository.SessionRepository;
 import com.projectchoi.api.repository.UserRepository;
@@ -37,6 +38,9 @@ class AuthControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private SessionRepository sessionRepository;
 
     @BeforeEach
@@ -51,7 +55,7 @@ class AuthControllerTest {
         userRepository.save(Users.builder()
                 .name("ms-choi")
                 .email("lucaschoi@gmail.com")
-                .password("asdf")
+                .password(passwordEncoder.encrypt("asdf"))
                 .build());
 
         Login login = Login.builder()
@@ -79,7 +83,7 @@ class AuthControllerTest {
         Users usr = userRepository.save(Users.builder()
                 .name("ms-choi")
                 .email("lucaschoi@gmail.com")
-                .password("asdf")
+                .password(passwordEncoder.encrypt("asdf"))
                 .build());
 
         Login login = Login.builder()
@@ -110,7 +114,7 @@ class AuthControllerTest {
         Users usr = userRepository.save(Users.builder()
                 .name("ms-choi")
                 .email("lucaschoi@gmail.com")
-                .password("asdf")
+                .password(passwordEncoder.encrypt("asdf"))
                 .build());
 
         Login login = Login.builder()
@@ -154,13 +158,13 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("회원가입 실패 - 예외처리")
+    @DisplayName("회원가입 실패 - 이메일 중복")
     public void signUp_fail_test() throws Exception {
         // given
         Users user = userRepository.save(Users.builder()
                 .email("lucaschoi@gmail.com")
                 .name("lee")
-                .password("5678")
+                .password(passwordEncoder.encrypt("asdf"))
                 .build());
 
         SignUp signUp = SignUp.builder()
