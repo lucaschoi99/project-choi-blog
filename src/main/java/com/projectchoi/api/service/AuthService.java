@@ -1,5 +1,6 @@
 package com.projectchoi.api.service;
 
+import com.projectchoi.api.crypt.PasswordEncoder;
 import com.projectchoi.api.domain.Session;
 import com.projectchoi.api.domain.Users;
 import com.projectchoi.api.exception.DuplicateEmailException;
@@ -18,12 +19,20 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public String signIn(Login login) {
         // db 조회
-        Users user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
+        Users user = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(InvalidSignIn::new);
+
+        // 암호화된 비밀번호 체크
+        boolean matches = passwordEncoder.matches(login.getPassword(), user.getPassword());
+
+        if (!matches) {
+            throw new InvalidSignIn();
+        }
 
         Session session = user.addSession();
         return session.getAccessToken();
@@ -36,9 +45,11 @@ public class AuthService {
             throw new DuplicateEmailException();
         }
 
+        String encodedPassword = passwordEncoder.encrypt(signUp.getPassword());
+
         Users user = Users.builder()
                 .email(signUp.getEmail())
-                .password(signUp.getPassword())
+                .password(encodedPassword)
                 .name(signUp.getName())
                 .build();
         userRepository.save(user);
