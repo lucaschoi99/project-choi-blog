@@ -2,6 +2,7 @@ package com.projectchoi.api.service;
 
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.exception.PostNotFound;
+import com.projectchoi.api.exception.UnauthorizedUser;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreate;
 import com.projectchoi.api.request.PostEdit;
@@ -44,6 +45,7 @@ class PostServiceTest {
         PostCreate postCreateDto = PostCreate.builder()
                 .title("글제목")
                 .content("글내용")
+                .authorId("1")
                 .build();
 
         // when
@@ -63,6 +65,7 @@ class PostServiceTest {
         Post requestPost = Post.builder()
                 .title("012345678912345")
                 .content("content")
+                .authorId("1")
                 .build();
         postRepository.save(requestPost);
 
@@ -83,6 +86,7 @@ class PostServiceTest {
         Post requestPost = Post.builder()
                 .title("012345678912345")
                 .content("content")
+                .authorId("1")
                 .build();
         postRepository.save(requestPost);
 
@@ -102,6 +106,7 @@ class PostServiceTest {
                         Post.builder()
                                 .title("choi's blog" + i)
                                 .content("blog content" + i)
+                                .authorId("1")
                                 .build())
                 .collect(Collectors.toList());
         postRepository.saveAll(posts);
@@ -127,6 +132,7 @@ class PostServiceTest {
                         Post.builder()
                                 .title("choi's blog" + i)
                                 .content("blog content" + i)
+                                .authorId("1")
                                 .build())
                 .collect(Collectors.toList());
         postRepository.saveAll(posts);
@@ -142,12 +148,13 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 제목 수정")
-    void edit_title_test() {
+    @DisplayName("글 제목 수정 성공 - 작성자 본인확인 검증 로직")
+    void edit_AUTH_test() {
         // given
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId("1")
                 .build();
         postRepository.save(post);
 
@@ -156,7 +163,7 @@ class PostServiceTest {
                 .build();
 
         // when
-        postService.edit(post.getId(), postEdit);
+        postService.edit(post.getId(), postEdit, Long.valueOf(post.getAuthorId()));
 
         // then
         Post changedPost = postRepository.findById(post.getId())
@@ -166,12 +173,13 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 내용 수정")
-    void edit_content_test() {
+    @DisplayName("글 제목 수정 실패 - 작성자 본인확인 검증 로직")
+    void edit_AUTH_fail_test() {
         // given
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId("1")
                 .build();
         postRepository.save(post);
 
@@ -179,68 +187,81 @@ class PostServiceTest {
                 .content("리버뷰용산")
                 .build();
 
-        // when
-        postService.edit(post.getId(), postEdit);
+        // expected
+        assertThrows(UnauthorizedUser.class, () ->
+                postService.edit(post.getId(), postEdit, Long.valueOf(post.getAuthorId()) + 1L));
 
-        // then
-        Post changedPost = postRepository.findById(post.getId())
-                .orElseThrow(() -> new RuntimeException("글 제목 수정 과정에서 오류가 발생했습니다. 글 id=" + post.getId()));
-        assertEquals("msChoi", changedPost.getTitle());
-        assertEquals("리버뷰용산", changedPost.getContent());
     }
 
     @Test
-    @DisplayName("글 내용 수정 존재X- 실패 케이스")
-    void edit_content_fail_test() {
+    @DisplayName("글 수정 존재X- 실패 케이스")
+    void edit_NOT_EXISTS_fail_test() {
         // given
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId("1")
                 .build();
         postRepository.save(post);
 
         PostEdit postEdit = PostEdit.builder()
                 .content("리버뷰용산")
                 .build();
-
 
         // expected
         assertThrows(PostNotFound.class, () -> {
-            postService.edit(post.getId() + 1L, postEdit);
+            postService.edit(post.getId() + 1L, postEdit, Long.valueOf(post.getAuthorId()));
         });
     }
 
-
     @Test
-    @DisplayName("글 삭제")
-    void delete_post_test() {
+    @DisplayName("글 삭제 성공 - 작성자 본인확인 검증 로직")
+    void delete_post_AUTH_test() {
         // given
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId("1")
                 .build();
         postRepository.save(post);
 
         // when
-        postService.delete(post.getId());
+        postService.delete(post.getId(), Long.valueOf(post.getAuthorId()));
 
         // then
         assertEquals(0, postRepository.count());
     }
 
     @Test
-    @DisplayName("글 삭제 존재X- 실패 케이스")
-    void delete_post_fail_test() {
+    @DisplayName("글 삭제 실패 - 작성자 본인확인 검증 로직")
+    void delete_post_AUTH_fail_test() {
         // given
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId("1")
+                .build();
+        postRepository.save(post);
+
+        // expected
+        assertThrows(UnauthorizedUser.class, () ->
+                postService.delete(post.getId(), Long.valueOf(post.getAuthorId()) + 1L));
+    }
+
+    @Test
+    @DisplayName("글 삭제 실패- 존재X")
+    void delete_post_NON_EXISTS_fail_test() {
+        // given
+        Post post = Post.builder()
+                .title("msChoi")
+                .content("반포자이")
+                .authorId("1")
                 .build();
         postRepository.save(post);
 
         // expected
         assertThrows(PostNotFound.class, () -> {
-            postService.delete(post.getId() + 1L);
+            postService.delete(post.getId() + 1L, Long.valueOf(post.getAuthorId()));
         });
     }
 

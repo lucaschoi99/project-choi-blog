@@ -1,10 +1,16 @@
 package com.projectchoi.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.projectchoi.api.crypt.PasswordEncoder;
 import com.projectchoi.api.domain.Post;
+import com.projectchoi.api.domain.Users;
 import com.projectchoi.api.repository.PostRepository;
+import com.projectchoi.api.repository.SessionRepository;
+import com.projectchoi.api.repository.UserRepository;
+import com.projectchoi.api.request.Login;
 import com.projectchoi.api.request.PostCreate;
 import com.projectchoi.api.request.PostEdit;
+import com.projectchoi.api.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -38,9 +45,23 @@ class PostControllerTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SessionRepository sessionRepository;
+
     @BeforeEach
     void beforeEach() {
         postRepository.deleteAll();
+        userRepository.deleteAll();
+        sessionRepository.deleteAll();
     }
 
     @Test
@@ -50,6 +71,7 @@ class PostControllerTest {
         PostCreate request = PostCreate.builder()
                 .title("바보바보바보")
                 .content("하하")
+                .authorId("1")
                 .build();
 
         // Object -> String
@@ -70,6 +92,7 @@ class PostControllerTest {
         // given
         PostCreate request = PostCreate.builder()
                 .content("글내용입니다 하하")
+                .authorId("1")
                 .build();
 
         // Object -> String
@@ -95,6 +118,7 @@ class PostControllerTest {
         PostCreate request = PostCreate.builder()
                 .title("제목입니다")
                 .content("글 내용입니다 하하")
+                .authorId("1")
                 .build();
 
         // Object -> String
@@ -122,6 +146,7 @@ class PostControllerTest {
         Post post = Post.builder()
                 .title("title")
                 .content("content")
+                .authorId("1")
                 .build();
         postRepository.save(post);
 
@@ -155,6 +180,7 @@ class PostControllerTest {
                         Post.builder()
                                 .title("choi's blog" + i)
                                 .content("blog content" + i)
+                                .authorId("1")
                                 .build())
                 .collect(Collectors.toList());
         postRepository.saveAll(posts);
@@ -179,6 +205,7 @@ class PostControllerTest {
                         Post.builder()
                                 .title("choi's blog" + i)
                                 .content("blog content" + i)
+                                .authorId("1")
                                 .build())
                 .collect(Collectors.toList());
         postRepository.saveAll(posts);
@@ -203,6 +230,7 @@ class PostControllerTest {
                         Post.builder()
                                 .title("choi's blog" + i)
                                 .content("blog content" + i)
+                                .authorId("1")
                                 .build())
                 .collect(Collectors.toList());
         postRepository.saveAll(posts);
@@ -221,12 +249,30 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 제목 수정")
-    public void edit_title_test() throws Exception {
+    @DisplayName("글 제목 수정 - 작성자 본인확인 검증")
+    public void edit_title_AUTH_test() throws Exception {
         // given
+        // 유저 등록후 로그인
+        Users user = userRepository.save(Users.builder()
+                .name("minsoo choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("asdf")
+                .build();
+
+        // 유저 세션 값 -> Cookie 전달
+        String accessToken = authService.signIn(login);
+        Cookie cookie = new Cookie("SESSION", accessToken);
+
+        // 글 등록 후 수정 요청
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId(String.valueOf(user.getId()))
                 .build();
         postRepository.save(post);
 
@@ -238,66 +284,195 @@ class PostControllerTest {
         // expected
         mockMvc.perform(patch("/posts/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
+                        .cookie(cookie)
                         .content(objectMapper.writeValueAsString(postEdit)))
                         .andExpect(status().isOk())
                         .andDo(print());
     }
 
     @Test
-    @DisplayName("글 내용 수정")
-    public void edit_content_test() throws Exception {
+    @DisplayName("글 제목 수정 실패 - 작성자 본인확인 검증 실패")
+    public void edit_title_AUTH_fail_test() throws Exception {
         // given
+        // 유저 등록후 로그인
+        Users user = userRepository.save(Users.builder()
+                .name("minsoo choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("asdf")
+                .build();
+
+        // 유저 세션 값 -> Cookie 전달
+        String accessToken = authService.signIn(login);
+        Cookie cookie = new Cookie("SESSION", accessToken + "addSomethingElse");
+
+        // 글 등록 후 수정 요청
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId(String.valueOf(user.getId()))
                 .build();
         postRepository.save(post);
 
         PostEdit postEdit = PostEdit.builder()
-                .title("msChoi")
-                .content("리버뷰용산")
+                .title("bin")
+                .content("반포자이")
                 .build();
 
         // expected
         mockMvc.perform(patch("/posts/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
+                        .cookie(cookie)
                         .content(objectMapper.writeValueAsString(postEdit)))
-                        .andExpect(status().isOk())
-                        .andDo(print());
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
     }
 
     @Test
-    @DisplayName("게시글 수정 게시글X - 실패 케이스")
-    public void edit_post_fail_test() throws Exception {
+    @DisplayName("게시글 수정 실패 - 글 존재X")
+    public void edit_post_NOT_EXISTS_fail_test() throws Exception {
         // given
-        PostEdit postEdit = PostEdit.builder()
+        // 유저 등록후 로그인
+        Users user = userRepository.save(Users.builder()
+                .name("minsoo choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("asdf")
+                .build();
+
+        // 유저 세션 값 -> Cookie 전달
+        String accessToken = authService.signIn(login);
+        Cookie cookie = new Cookie("SESSION", accessToken);
+
+        // 글 등록 후 수정 요청
+        Post post = Post.builder()
                 .title("msChoi")
-                .content("리버뷰용산")
+                .content("반포자이")
+                .authorId(String.valueOf(user.getId()))
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("bin")
+                .content("반포자이")
                 .build();
 
         // expected
-        mockMvc.perform(patch("/posts/{postId}", 1L)
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postEdit)))
+        mockMvc.perform(patch("/posts/{postId}", post.getId() + 1L)
+                        .contentType(APPLICATION_JSON)
+                        .cookie(cookie)
+                        .content(objectMapper.writeValueAsString(postEdit)))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
 
     @Test
-    @DisplayName("글 삭제")
-    public void delete_post_test() throws Exception {
+    @DisplayName("글 삭제 성공 - 작성자 본인확인 검증")
+    public void delete_post_AUTH_test() throws Exception {
         // given
+        // 유저 등록후 로그인
+        Users user = userRepository.save(Users.builder()
+                .name("minsoo choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("asdf")
+                .build();
+
+        // 유저 세션 값 -> Cookie 전달
+        String accessToken = authService.signIn(login);
+        Cookie cookie = new Cookie("SESSION", accessToken);
+
+        // 글 등록 후 삭제 요청
         Post post = Post.builder()
                 .title("msChoi")
                 .content("반포자이")
+                .authorId(String.valueOf(user.getId()))
                 .build();
         postRepository.save(post);
 
         // expected
         mockMvc.perform(delete("/posts/{postId}", post.getId())
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON)
+                        .cookie(cookie))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 삭제 실패 - 작성자 본인확인 검증 실패")
+    public void delete_post_AUTH_fail_test() throws Exception {
+        // given
+        // 유저 등록후 로그인
+        Users user = userRepository.save(Users.builder()
+                .name("minsoo choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("asdf")
+                .build();
+
+        // 유저 세션 값 -> Cookie 전달
+        String accessToken = authService.signIn(login);
+        Cookie cookie = new Cookie("SESSION", accessToken + "addSomethingElse");
+
+        // 글 등록 후 삭제 요청
+        Post post = Post.builder()
+                .title("msChoi")
+                .content("반포자이")
+                .authorId(String.valueOf(user.getId()))
+                .build();
+        postRepository.save(post);
+
+        // expected
+        mockMvc.perform(delete("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .cookie(cookie))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 삭제 실패 - 글 존재 X")
+    public void delete_post_NOT_EXISTS_fail_test() throws Exception {
+        // given
+        // 유저 등록후 로그인
+        Users user = userRepository.save(Users.builder()
+                .name("minsoo choi")
+                .email("lucaschoi@gmail.com")
+                .password(passwordEncoder.encrypt("asdf"))
+                .build());
+
+        Login login = Login.builder()
+                .email("lucaschoi@gmail.com")
+                .password("asdf")
+                .build();
+
+        // 유저 세션 값 -> Cookie 전달
+        String accessToken = authService.signIn(login);
+        Cookie cookie = new Cookie("SESSION", accessToken);
+
+        // 글 삭제 요청
+        // expected
+        mockMvc.perform(delete("/posts/{postId}", 1L)
+                        .contentType(APPLICATION_JSON)
+                        .cookie(cookie))
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
