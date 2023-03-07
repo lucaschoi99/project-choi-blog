@@ -18,8 +18,7 @@
 ## About the Project
 
 ---
-
-게시글 CRUD 기능을 **API 개발로 구현**하고 **문서화 작업**, **배포**까지 한 스프링 부트 프로젝트 입니다.
+> 게시글 CRUD 기능을 **API 개발로 구현**하고 **문서화 작업**, **배포**까지 한 스프링 부트 개인 프로젝트 입니다.
 
 더불어, 로그인/회원가입 기능과 비밀번호 암호화, 수정,삭제 권한을 위한 인증/검증 기능을 구현했습니다.
 
@@ -56,27 +55,26 @@
 ## Key Features
 
 ---
+- #### `CRUD` 기능
+  - 글 작성, 조회, 수정, 삭제 기능 - API 개발
 
-#### `CRUD` 기능
-- 글 작성, 조회, 수정, 삭제 기능 - API 개발
+- #### `API Docs` 문서화 작업
+  - 테스트 케이스 관리 - CRUD API 기능 문서화 작업  
 
-#### `API Docs` 문서화 작업
-- 테스트 케이스 관리 - CRUD API 기능 문서화 작업  
+- #### `인증/검증` 기능
+  - 글 수정/삭제 권한, 회원가입/로그인 검증, 세션, 쿠키, (JWT)
 
-#### `인증/검증` 기능
-- 글 수정/삭제 권한, 회원가입/로그인 검증, 세션, 쿠키, (JWT)
+- #### `로그인/회원가입` 기능
+  - 로그인 시 유저 세션을 발급 받도록 설계
+  - 발급된 세션 토큰은 Header의 `Cookie`에 담도록 설계
 
-#### `로그인/회원가입` 기능
-- 로그인 시 유저 세션을 발급 받도록 설계
-- 발급된 세션 토큰은 Header의 `Cookie`에 담도록 설계
+- #### `비밀번호 암호화` 기능
+  - 회원가입 시 raw password를 `Scrypt` 암호화 라이브러리를 이용해 암호화 후 저장
 
-#### `비밀번호 암호화` 기능
-- 회원가입 시 raw password를 `Scrypt` 암호화 라이브러리를 이용해 암호화 후 저장
-
-#### `Exception` 처리
-- 인증/검증 예외처리: `UnauthorizedUser`, `DuplicateEmailException`, `InvalidSignIn`, `InvalidRequest`
-- Status 404 에러(존재하지 않는 글에 대한 처리): `PostNotFound`
-- 최상위 Exception 추상 클래스 `ProjectChoiException`을 상속받은 클래스로 설계
+- #### `Exception` 처리
+  - 인증/검증 예외처리: `UnauthorizedUser`, `DuplicateEmailException`, `InvalidSignIn`, `InvalidRequest`
+  - Status 404 에러(존재하지 않는 글에 대한 처리): `PostNotFound`
+  - 최상위 Exception 추상 클래스 `ProjectChoiException`을 상속받은 클래스로 설계
 
 
 ## Development Process
