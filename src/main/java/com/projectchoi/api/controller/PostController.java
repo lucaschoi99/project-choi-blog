@@ -60,13 +60,13 @@ public class PostController {
 
     // 게시글 수정
     @PatchMapping("/posts/{postId}")
-    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
-        return postService.edit(postId, request);
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request, @Auth UserSession userSession) {
+        return postService.edit(postId, request, userSession.id);
     }
 
     // 게시글 삭제
     @DeleteMapping("/posts/{postId}")
-    public void delete(@PathVariable Long postId) {
-        postService.delete(postId);
+    public void delete(@PathVariable Long postId, @Auth UserSession userSession) {
+        postService.delete(postId, userSession.id);
     }
 }

@@ -2,6 +2,7 @@ package com.projectchoi.api.service;
 
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.exception.PostNotFound;
+import com.projectchoi.api.exception.UnauthorizedUser;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreate;
 import com.projectchoi.api.request.PostEdit;
@@ -28,6 +29,7 @@ public class PostService {
         Post post = Post.builder()
                 .title(postCreate.getTitle())
                 .content(postCreate.getContent())
+                .authorId(postCreate.getAuthorId())
                 .build();
 
         Post saved = postRepository.save(post);
@@ -43,6 +45,7 @@ public class PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .authorId(post.getAuthorId())
                 .build();
     }
 
@@ -62,9 +65,15 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public PostResponse edit(Long id, PostEdit postEdit) {
+    public PostResponse edit(Long id, PostEdit postEdit, Long userId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFound::new);
+
+        // 글 작성자 본인확인 로직
+        boolean isAuthorized = Long.valueOf(post.getAuthorId()).equals(userId);
+        if (!isAuthorized) {
+            throw new UnauthorizedUser();
+        }
 
         post.edit(postEdit);
         return new PostResponse(post);
@@ -72,9 +81,16 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, Long userId) {
         Post postToDelete = postRepository.findById(id)
                 .orElseThrow(PostNotFound::new);
+
+        // 글 작성자 본인확인 로직
+        boolean isAuthorized = Long.valueOf(postToDelete.getAuthorId()).equals(userId);
+        if (!isAuthorized) {
+            throw new UnauthorizedUser();
+        }
+
         postRepository.delete(postToDelete);
     }
 }
