@@ -1,5 +1,29 @@
-### 테스트 요청
-
-GET {{baseUrl}}/foo
+### 글 작성 요청
+POST {{baseUrl}}/posts
 Content-Type: application/json
-Authorization: choi_headerAuth
+
+{
+  "title": "One Piece",
+  "content": "The Age of Exploration"
+}
+
+### 글 전체 조회 요청 - QueryDsl
+GET {{baseUrl}}/posts?page=1&size=5
+
+### 글 전체 조회 요청 - Pageable
+GET {{baseUrl}}/posts-pageable
+
+### 글 단건 조회 요청
+GET {{baseUrl}}/posts/{{postId}}
+
+### 글 수정 요청
+PATCH {{baseUrl}}/posts/{{postId}}
+Content-Type: application/json
+
+{
+  "title": "원피스",
+  "content": "대항해시대"
+}
+
+### 글 삭제 요청
+DELETE {{baseUrl}}/posts/{{postId}}

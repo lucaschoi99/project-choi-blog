@@ -1,5 +1,14 @@
-### 로그인
+### 회원가입
+POST {{baseUrl}}/auth/signUp
+Content-Type: application/json
 
+{
+  "email": "lucaschoi@gmail.com",
+  "password": "asdf",
+  "name:": "minsoo choi"
+}
+
+### 로그인
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -8,8 +17,8 @@ Content-Type: application/json
   "password": "asdf"
 }
 
-### 인증 페이지 요청
+### 인증이 필요한 페이지 요청
 GET {{baseUrl}}/foo
 Content-Type: application/json
-Cookie: SESSION=f0c940be-d5d3-4e26-ba5e-0b2b29774a57
+Cookie: SESSION=b04b8617-a910-4613-8cde-f7b4ecbecc51
 
