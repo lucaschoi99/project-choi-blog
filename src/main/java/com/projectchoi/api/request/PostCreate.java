@@ -16,10 +16,14 @@ public class PostCreate {
     @NotBlank
     private String content;
 
+    @NotBlank
+    private String authorId;
+
     @Builder
-    public PostCreate(String title, String content) {
+    public PostCreate(String title, String content, String authorId) {
         this.title = title;
         this.content = content;
+        this.authorId = authorId;
     }
 
     public void validate() {

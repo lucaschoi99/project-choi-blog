@@ -19,13 +19,16 @@ public class Post {
 
     private String title;
 
+    private String authorId;
+
     @Lob // 자바에서는 String, DB 에서는 Long text 로 넘어가도록
     private String content;
 
     @Builder
-    public Post(String title, String content) {
+    public Post(String title, String content, String authorId) {
         this.title = title;
         this.content = content;
+        this.authorId = authorId;
     }
 
     public void edit(PostEdit postEdit) {
