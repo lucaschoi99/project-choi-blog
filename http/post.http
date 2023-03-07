@@ -4,7 +4,8 @@ Content-Type: application/json
 
 {
   "title": "One Piece",
-  "content": "The Age of Exploration"
+  "content": "The Age of Exploration",
+  "authorId": {{userId}}
 }
 
 ### 글 전체 조회 요청 - QueryDsl
@@ -19,6 +20,7 @@ GET {{baseUrl}}/posts/{{postId}}
 ### 글 수정 요청
 PATCH {{baseUrl}}/posts/{{postId}}
 Content-Type: application/json
+Cookie: SESSION=1121f7f0-550e-4155-9b77-693a848c6eb5
 
 {
   "title": "원피스",
@@ -27,3 +29,5 @@ Content-Type: application/json
 
 ### 글 삭제 요청
 DELETE {{baseUrl}}/posts/{{postId}}
+Content-Type: application/json
+Cookie: SESSION=1121f7f0-550e-4155-9b77-693a848c6eb5
