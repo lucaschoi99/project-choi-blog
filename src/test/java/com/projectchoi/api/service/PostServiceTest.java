@@ -75,7 +75,7 @@ class PostServiceTest {
         // then
         assertNotNull(getPost);
         assertThat(getPost.getId()).isEqualTo(requestPost.getId());
-        assertEquals("0123456789", getPost.getTitle());
+        assertEquals("012345678912345", getPost.getTitle());
         assertEquals("content", getPost.getContent());
     }
 

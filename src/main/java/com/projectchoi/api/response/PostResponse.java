@@ -28,8 +28,7 @@ public class PostResponse {
     @Builder
     public PostResponse(Long id, String title, String content, String authorId) {
         this.id = id;
-        // 서비스 정책 요구 사항: title 항목은 최대 10글자까지 허용해 주세요.
-        this.title = title.substring(0, Math.min(title.length(), 10));
+        this.title = title;
         this.content = content;
         this.authorId = authorId;
     }
