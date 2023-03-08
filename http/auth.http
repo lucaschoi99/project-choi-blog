@@ -17,8 +17,3 @@ Content-Type: application/json
   "password": "asdf"
 }
 
-### 인증이 필요한 페이지 요청
-GET {{baseUrl}}/foo
-Content-Type: application/json
-Cookie: SESSION=b04b8617-a910-4613-8cde-f7b4ecbecc51
-
