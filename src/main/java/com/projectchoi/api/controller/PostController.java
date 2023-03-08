@@ -22,17 +22,6 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/foo")
-    public Long foo(@Auth UserSession userSession) {
-        log.info(">>>{}", userSession.id);
-        return userSession.id;
-    }
-
-    @GetMapping("/bar")
-    public String bar() {
-        return "인증이 필요 없는 페이지입니다.";
-    }
-
     // 게시글 작성
     @PostMapping("/posts")
     public Long post(@RequestBody @Valid PostCreate request) {
