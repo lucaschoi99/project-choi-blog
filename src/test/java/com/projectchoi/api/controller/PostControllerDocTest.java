@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectchoi.api.domain.Post;
 import com.projectchoi.api.repository.PostRepository;
 import com.projectchoi.api.request.PostCreate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,37 +35,15 @@ public class PostControllerDocTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
     private PostRepository postRepository;
 
-    @Test
-    @DisplayName("글 단건 조회")
-    void post_inquiry() throws Exception {
-        // given
-        Post post = Post.builder()
-                .title("docTest-title")
-                .content("docTest-content")
-                .build();
-        postRepository.save(post);
-
-        // expected
-        this.mockMvc.perform(get("/posts/{postId}", 1L)
-                        .accept(APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document("post-inquiry", pathParameters(
-                                parameterWithName("postId").description("게시글 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").description("게시글 ID"),
-                                fieldWithPath("title").description("글 제목"),
-                                fieldWithPath("content").description("글 내용")
-                        )
-                ));
+    @BeforeEach
+    void beforeEach() {
+        postRepository.deleteAll();
     }
 
     @Test
@@ -72,8 +51,9 @@ public class PostControllerDocTest {
     void post_create() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
-                .title("뉴 포스트")
-                .content("하하")
+                .title("새로운 글")
+                .content("새로운 내용")
+                .authorId("1")
                 .build();
 
         // Object -> String
@@ -92,8 +72,41 @@ public class PostControllerDocTest {
                                 fieldWithPath("title").description("글 제목")
                                         .attributes(key("required").value("Y")),
                                 fieldWithPath("content").description("글 내용")
+                                        .attributes(key("required").value("Y")),
+                                fieldWithPath("authorId").description("작성자")
+                                        .attributes(key("required").value("Y"))
                         )
                 ));
     }
+
+    @Test
+    @DisplayName("글 단건 조회")
+    void post_inquiry() throws Exception {
+        // given
+        Post post = Post.builder()
+                .title("Sample_title")
+                .content("Sample_content")
+                .authorId("1")
+                .build();
+        postRepository.save(post);
+
+        // expected
+        this.mockMvc.perform(get("/posts/{postId}", 1L)
+                        .accept(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-inquiry", pathParameters(
+                                parameterWithName("postId").description("조회글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("글 ID"),
+                                fieldWithPath("title").description("글 제목"),
+                                fieldWithPath("content").description("글 내용"),
+                                fieldWithPath("authorId").description("작성자")
+                        )
+                ));
+    }
+
+
 
 }
