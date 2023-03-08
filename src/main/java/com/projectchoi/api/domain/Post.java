@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
@@ -17,11 +18,14 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String title;
 
+    @NotBlank
     private String authorId;
 
     @Lob // 자바에서는 String, DB 에서는 Long text 로 넘어가도록
+    @NotBlank
     private String content;
 
     @Builder
