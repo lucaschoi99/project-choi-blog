@@ -13,10 +13,7 @@
 
 #### [REST API Docs](http://localhost:8080/docs/index.html) 여기에서 확인 가능합니다.
 
-// TODO: Update api-docs screenshot when project ready
-
-
-[comment]: <> (![screenshot]&#40;https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.gif&#41;)
+<img width="1967" alt="image" src="https://user-images.githubusercontent.com/73485743/223671235-938057fc-6f21-46be-be34-4e457d6b445f.png">
 
 ## About the Project
 
