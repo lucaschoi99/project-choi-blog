@@ -11,7 +11,10 @@
   <a href="#development-process">Development Process</a>
 </p>
 
+#### [REST API Docs](http://localhost:8080/docs/index.html) 여기에서 확인 가능합니다.
+
 // TODO: Update api-docs screenshot when project ready
+
 
 [comment]: <> (![screenshot]&#40;https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.gif&#41;)
 
@@ -22,7 +25,7 @@
 
 더불어, 로그인/회원가입 기능과 비밀번호 암호화, 수정,삭제 권한을 위한 인증/검증 기능을 구현했습니다.
 
-특히, 커뮤니티성 개인 프로젝트를 진행함에 있어 `테스트 케이스 작성`, `배포`, `API 개발`, `꼼꼼한 Exception 처리` 와 같은 점들을 공부할 수 있어 많은 도움이 되었습니다.
+특히, 커뮤니티성 개인 프로젝트를 진행함에 있어 `테스트 케이스 작성`, `배포`, `REST API 개발`, `꼼꼼한 Exception 처리` 와 같은 점들을 공부할 수 있어 많은 도움이 되었습니다.
 
 ### Environment
 - Spring Boot `2.7.6`
@@ -32,9 +35,11 @@
 
 ### KeyWord
 - **Back-End**
-  - `Rest Api`
+  - `REST API`
   - `Spring Boot`
-  - `API Docs`
+  - 
+- **API Docs**
+  - `Spring REST Docs`
 
 [comment]: <> (Front-End)
 
@@ -56,10 +61,11 @@
 
 ---
 - #### `CRUD` 기능
-  - 글 작성, 조회, 수정, 삭제 기능 - API 개발
+  - 글 작성, 조회, 수정, 삭제 기능 - REST API 개발
 
 - #### `API Docs` 문서화 작업
-  - 테스트 케이스 관리 - CRUD API 기능 문서화 작업  
+  - [API DOCS](http://localhost:8080/docs/index.html) by **Spring REST Docs**
+  - 테스트 케이스 관리 - REST API 기능 문서화 작업
 
 - #### `인증/검증` 기능
   - 글 수정/삭제 권한, 회원가입/로그인 검증, 세션, 쿠키, (JWT)
