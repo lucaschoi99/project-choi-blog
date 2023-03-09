@@ -6,12 +6,12 @@
 <h4 align="center"> 스프링 부트 프로젝트 - 개인 블로그 API 개발</h4>
 
 <p align="center">
-  <a href="#about">About the project</a> •
+  <a href="#about-the-project">About the project</a> •
   <a href="#key-features">Key Features</a> •
   <a href="#development-process">Development Process</a>
 </p>
 
-#### [REST API Docs](http://localhost:8080/docs/index.html) 여기에서 확인 가능합니다.
+#### [REST API Docs](13.124.63.95:8080/docs/index.html) 여기에서 확인 가능합니다.
 
 <img width="1967" alt="image" src="https://user-images.githubusercontent.com/73485743/223671235-938057fc-6f21-46be-be34-4e457d6b445f.png">
 
