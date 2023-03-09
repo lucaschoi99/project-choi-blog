@@ -11,7 +11,7 @@
   <a href="#development-process">Development Process</a>
 </p>
 
-#### [REST API Docs](13.124.63.95:8080/docs/index.html) 여기에서 확인 가능합니다.
+#### [REST API Docs](http://13.124.63.95:8080/docs/index.html) 여기에서 확인 가능합니다.
 
 <img width="1967" alt="image" src="https://user-images.githubusercontent.com/73485743/223671235-938057fc-6f21-46be-be34-4e457d6b445f.png">
 
