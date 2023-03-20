@@ -29,12 +29,13 @@
 - Java `11`
 - `Junit5`
 - Gradle `7.5.1`
+- MySQL `8.0.32`
 
 ### KeyWord
 - **Back-End**
   - `REST API`
   - `Spring Boot`
-  - 
+  - `MySQL`
 - **API Docs**
   - `Spring REST Docs`
 
