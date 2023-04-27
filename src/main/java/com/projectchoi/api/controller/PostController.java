@@ -1,9 +1,6 @@
 package com.projectchoi.api.controller;
 
-import com.projectchoi.api.annotation.Auth;
-import com.projectchoi.api.config.data.UserSession;
 import com.projectchoi.api.request.PostCreate;
-import com.projectchoi.api.request.PostEdit;
 import com.projectchoi.api.request.PostSearch;
 import com.projectchoi.api.response.PostResponse;
 import com.projectchoi.api.service.PostService;
@@ -12,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -47,15 +44,15 @@ public class PostController {
         return postService.getList(postSearch);
     }
 
-    // 게시글 수정
-    @PatchMapping("/posts/{postId}")
-    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request, @Auth UserSession userSession) {
-        return postService.edit(postId, request, userSession.id);
-    }
-
-    // 게시글 삭제
-    @DeleteMapping("/posts/{postId}")
-    public void delete(@PathVariable Long postId, @Auth UserSession userSession) {
-        postService.delete(postId, userSession.id);
-    }
+//    // 게시글 수정
+//    @PatchMapping("/posts/{postId}")
+//    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request, @Auth UserSession userSession) {
+//        return postService.edit(postId, request, userSession.id);
+//    }
+//
+//    // 게시글 삭제
+//    @DeleteMapping("/posts/{postId}")
+//    public void delete(@PathVariable Long postId, @Auth UserSession userSession) {
+//        postService.delete(postId, userSession.id);
+//    }
 }
